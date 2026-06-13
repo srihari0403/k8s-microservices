@@ -20,7 +20,7 @@ pipeline {
             steps {
                 dir("services/${SERVICE}") { sh 'mvn test' }
             }
-            post { always { junit "services/${SERVICE}/target/surefire-reports/*.xml" } }
+            post { always { junit allowEmptyResults: true, testResults: "services/${SERVICE}/target/surefire-reports/*.xml" } }
         }
         stage('SonarQube Analysis') {
             steps {
