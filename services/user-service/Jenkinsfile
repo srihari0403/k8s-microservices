@@ -6,7 +6,7 @@ pipeline {
         DOCKER_IMAGE     = "srihari0403/user-service"
         IMAGE_TAG        = "${BUILD_NUMBER}"
     }
-    tools { maven 'Maven-3.9' }
+    tools { maven 'Maven-3.9'; jdk 'JDK-17' }
     stages {
         stage('Checkout') {
             steps { git branch: 'main', url: 'https://github.com/srihari0403/k8s-microservices.git', credentialsId: 'github-creds' }
