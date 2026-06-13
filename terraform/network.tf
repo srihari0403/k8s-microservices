@@ -38,5 +38,5 @@ resource "google_compute_firewall" "allow_external" {
     ports    = ["22", "6443", "8080", "30000-32767"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = [var.allowed_ip]
 }

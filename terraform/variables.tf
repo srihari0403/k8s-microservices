@@ -25,3 +25,8 @@ variable "ssh_user" {
 variable "ssh_pub_key_path" {
   default = "~/.ssh/id_rsa.pub"
 }
+
+variable "allowed_ip" {
+  description = "Your IP address for external access"
+  default     = "61.3.51.205/32"
+}
