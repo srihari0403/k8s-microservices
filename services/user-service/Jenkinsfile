@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDS = credentials('dockerhub-creds')
         SERVICE          = "user-service"
-        DOCKER_IMAGE     = "srihari0403/user-service"
+        DOCKER_IMAGE     = "srihari528/user-service"
         IMAGE_TAG        = "${BUILD_NUMBER}"
     }
     tools { maven 'Maven-3.9'; jdk 'JDK-17' }
@@ -45,7 +45,7 @@ pipeline {
         }
         stage('Docker Push') {
             steps {
-                sh "echo ${DOCKER_HUB_CREDS_PSW} | docker login -u ${DOCKER_HUB_CREDS_USR} --password-stdin"
+                sh 'echo $DOCKER_HUB_CREDS_PSW | docker login -u $DOCKER_HUB_CREDS_USR --password-stdin'
                 sh "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
             }
         }

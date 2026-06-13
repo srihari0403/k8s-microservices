@@ -1,6 +1,6 @@
 name: user-service
 image:
-  repository: srihari0403/user-service
+  repository: srihari528/user-service
   tag: latest
 
 replicaCount: 2

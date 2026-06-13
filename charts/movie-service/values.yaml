@@ -1,6 +1,6 @@
 name: movie-service
 image:
-  repository: srihari0403/movie-service
+  repository: srihari528/movie-service
   tag: latest
 
 replicaCount: 2

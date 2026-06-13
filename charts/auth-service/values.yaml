@@ -1,6 +1,6 @@
 name: auth-service
 image:
-  repository: srihari0403/auth-service
+  repository: srihari528/auth-service
   tag: latest
 
 replicaCount: 2
