@@ -9,7 +9,7 @@ pipeline {
     tools { maven 'Maven-3.9' }
     stages {
         stage('Checkout') {
-            steps { git branch: 'main', url: 'https://github.com/srihari0403/netflix-app.git' }
+            steps { git branch: 'main', url: 'https://github.com/srihari0403/k8s-microservices.git', credentialsId: 'github-creds' }
         }
         stage('Build') {
             steps {

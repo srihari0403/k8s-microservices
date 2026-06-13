@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/srihari0403/k8s-microservices.git'
+                git branch: 'main', url: 'https://github.com/srihari0403/k8s-microservices.git', credentialsId: 'github-creds'
             }
         }
 
