@@ -53,7 +53,6 @@ pipeline {
             steps {
                 sh """
                     export KUBECONFIG=/var/snap/jenkins/current/.kube/config
-                    kubectl apply -f k8s/namespace.yaml
                     helm upgrade --install ${SERVICE} charts/microservice \
                         -f charts/${SERVICE}/values.yaml \
                         --set image.tag=${IMAGE_TAG} \
