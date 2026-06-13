@@ -22,6 +22,15 @@ pipeline {
             }
             post { always { junit "services/${SERVICE}/target/surefire-reports/*.xml" } }
         }
+        stage('SonarQube Analysis') {
+            steps {
+                dir("services/${SERVICE}") {
+                    withCredentials([string(credentialsId: 'srihari0403_user-service', variable: 'SONAR_TOKEN')]) {
+                        sh 'mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN'
+                    }
+                }
+            }
+        }
         stage('Docker Build') {
             steps {
                 dir("services/${SERVICE}") {
