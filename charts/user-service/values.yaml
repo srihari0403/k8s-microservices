@@ -1,0 +1,20 @@
+name: user-service
+image:
+  repository: srihari0403/user-service
+  tag: latest
+
+replicaCount: 2
+healthPath: /api/users/health
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080

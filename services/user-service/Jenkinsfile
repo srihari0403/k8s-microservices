@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_HUB_CREDS = credentials('dockerhub-creds')
+        SERVICE          = "user-service"
+        DOCKER_IMAGE     = "srihari0403/user-service"
+        IMAGE_TAG        = "${BUILD_NUMBER}"
+    }
+    tools { maven 'Maven-3.9' }
+    stages {
+        stage('Checkout') {
+            steps { git branch: 'main', url: 'https://github.com/srihari0403/netflix-app.git' }
+        }
+        stage('Build') {
+            steps {
+                dir("services/${SERVICE}") { sh 'mvn clean package -DskipTests' }
+            }
+        }
+        stage('Test') {
+            steps {
+                dir("services/${SERVICE}") { sh 'mvn test' }
+            }
+            post { always { junit "services/${SERVICE}/target/surefire-reports/*.xml" } }
+        }
+        stage('Docker Build') {
+            steps {
+                dir("services/${SERVICE}") {
+                    sh "docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} ."
+                }
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_IMAGE}:${IMAGE_TAG}"
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh "echo ${DOCKER_HUB_CREDS_PSW} | docker login -u ${DOCKER_HUB_CREDS_USR} --password-stdin"
+                sh "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh """
+                    export KUBECONFIG=/var/snap/jenkins/current/.kube/config
+                    kubectl apply -f k8s/namespace.yaml
+                    helm upgrade --install ${SERVICE} charts/microservice \
+                        -f charts/${SERVICE}/values.yaml \
+                        --set image.tag=${IMAGE_TAG} \
+                        --namespace production \
+                        --wait --timeout 120s
+                """
+            }
+        }
+        stage('Smoke Test') {
+            steps {
+                sh """
+                    sleep 15
+                    LB_IP=\$(kubectl --kubeconfig=/var/snap/jenkins/current/.kube/config get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+                    curl -f http://\$LB_IP/api/users/health
+                """
+            }
+        }
+    }
+    post {
+        failure {
+            sh "export KUBECONFIG=/var/snap/jenkins/current/.kube/config && helm rollback ${SERVICE} -n production || true"
+        }
+        always {
+            sh "docker rmi ${DOCKER_IMAGE}:${IMAGE_TAG} || true"
+        }
+    }
+}

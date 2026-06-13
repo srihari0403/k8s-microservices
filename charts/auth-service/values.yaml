@@ -1,0 +1,20 @@
+name: auth-service
+image:
+  repository: srihari0403/auth-service
+  tag: latest
+
+replicaCount: 2
+healthPath: /api/auth/health
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
